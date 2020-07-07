@@ -6,6 +6,7 @@ import { Ionicons, FontAwesome } from '@expo/vector-icons';
 import AddEntry from './components/addEntry';
 import { NavigationContainer } from 'react-navigation';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createStackNavigator } from '@react-navigation/stack';
 
 import { createStore } from 'redux';
 import { Provider } from 'react-redux';
@@ -13,6 +14,8 @@ import reducer from './reducers';
 import History from './components/History';
 import { purple, white } from './utils/colors';
 import { Constants } from 'expo';
+import EntryDetail from './components/EntryDetail';
+import Live from './components/Live';
 
 function AppStatusBar({ backgroundColor, ...props }) {
 	return (
@@ -27,6 +30,7 @@ function AppStatusBar({ backgroundColor, ...props }) {
 }
 
 const Tab = createBottomTabNavigator();
+const Stack = createStackNavigator();
 
 const tabConfig = {
 	tabBarOptions: {
@@ -45,6 +49,73 @@ const tabConfig = {
 	},
 };
 
+function Tabs() {
+	return (
+		<Tab.Navigator tabBarOptions={tabConfig.tabBarOptions}>
+			<Tab.Screen
+				name="AddEntry"
+				component={AddEntry}
+				options={{
+					tabBarLabel: 'Add Entry',
+					tabBarIcon: ({ tintColor }) => (
+						<FontAwesome
+							name="plus-square"
+							color={tintColor}
+							size={30}
+						/>
+					),
+				}}
+			/>
+			<Tab.Screen
+				name="History"
+				component={History}
+				options={{
+					tabBarLabel: 'History',
+					tabBarIcon: ({ tintColor }) => (
+						<Ionicons
+							name="ios-bookmarks"
+							color={tintColor}
+							size={30}
+						/>
+					),
+				}}
+			/>
+			<Tab.Screen
+				name="Live"
+				component={Live}
+				options={{
+					tabBarLabel: 'Live',
+					tabBarIcon: ({ tintColor }) => (
+						<Ionicons
+							name="ios-speedometer"
+							color={tintColor}
+							size={30}
+						/>
+					),
+				}}
+			/>
+		</Tab.Navigator>
+	);
+}
+
+function MainNavigator() {
+	return (
+		<Stack.Navigator>
+			<Stack.Screen name="Home" component={Tabs} />
+			<Stack.Screen
+				name="EntryDetail"
+				component={EntryDetail}
+				options={{
+					headerTintColor: white,
+					headerStyle: {
+						purple,
+					},
+				}}
+			/>
+		</Stack.Navigator>
+	);
+}
+
 export default function App() {
 	return (
 		<Provider store={createStore(reducer)}>
@@ -53,37 +124,8 @@ export default function App() {
 					backgroundColor={purple}
 					barStyle="light-content"
 				/>
-				<NavigationContainer initialRouteName="Add Entry">
-					<Tab.Navigator tabBarOptions={tabConfig.tabBarOptions}>
-						<Tab.Screen
-							name="AddEntry"
-							component={AddEntry}
-							options={{
-								tabBarLabel: 'Add Entry',
-								tabBarIcon: ({ tintColor }) => (
-									<FontAwesome
-										name="plus-square"
-										color={tintColor}
-										size={30}
-									/>
-								),
-							}}
-						/>
-						<Tab.Screen
-							name="History"
-							component={History}
-							options={{
-								tabBarLabel: 'History',
-								tabBarIcon: ({ tintColor }) => (
-									<Ionicons
-										name="ios-bookmarks"
-										color={tintColor}
-										size={30}
-									/>
-								),
-							}}
-						/>
-					</Tab.Navigator>
+				<NavigationContainer>
+					<MainNavigator />
 				</NavigationContainer>
 			</View>
 		</Provider>
